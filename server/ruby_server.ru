@@ -1,7 +1,8 @@
 # 跑起来
 # 
 # 1. 安装 faye gem
-# gem install 'faye'
+# gem install faye
+# gem install faye-redis
 # 2. 启动 rack app (development 模式有问题)
 # rackup ruby_server.ru -s thin -E production
 
