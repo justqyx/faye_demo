@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>我是 client 2</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <script type="text/javascript" src="jquery-1.11.1.js"></script>
+  <script type="text/javascript" src="faye-browser.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      var msgList = document.getElementById("msg-list");
+
+      // 频道
+      var channel = "/wando";
+
+      // 客户端的名字
+      var msgPrefix = "client_2 说：";
+
+      var $msgList = $("#msg-list");
+
+      // 新建 client
+      var client = new Faye.Client('http://localhost:9292/faye', { timeout: 120, retry: 5 });
+      
+      client.setHeader('Authorization', 'OAuth abcd-1234');
+
+      // 订阅一个频道
+      var subscription = client.subscribe(channel, function(msg) {
+        // 每当收到消息，这个回调就会被调用
+        $msgList.append("<li class='left'>" + msg + "</li>");
+        msgList.scrollTop = msgList.scrollHeight;
+      });
+
+      // 主动发送消息
+      $("#input-box").keyup(function(e){
+        if (e.keyCode == 13) {
+          client
+            .publish(channel, msgPrefix + $(this).val())
+            .then(
+              function() {console.log("消息发送成功"); }, // 成功的回调
+              function(error) { alert("消息发送失败，" + error.message); } // 失败的回调
+            );
+          $(this).val('');
+        }
+      });
+
+    });
+  </script>
+</head>
+<body>
+
+  <ul id="msg-list"></ul>
+
+  <div id="input-wrapper">
+    <p>输入文字，回车发送消息</p>
+    <input id="input-box" type="text" />
+  </div>
+
+</body>
+</html>
